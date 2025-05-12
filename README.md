@@ -79,6 +79,9 @@ ExpenseTracker/
 ├── static/
 │   └── css/
 │       └── custom.css
+│   └── js/
+│       └── charts.js
+│       └── main.js
 ├── requirements.txt
 ```
 
