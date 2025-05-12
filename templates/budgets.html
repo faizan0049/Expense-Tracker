@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Budgets - Personal Expense Tracker{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-balance-scale me-2"></i>Budget Planning</h1>
+</div>
+
+<div class="row">
+    <!-- Add Budget Form -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">Create Budget</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('budgets') }}">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label for="category_id" class="form-label">{{ form.category_id.label }}</label>
+                        {{ form.category_id(class="form-control") }}
+                        {% for error in form.category_id.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">{{ form.amount.label }}</label>
+                        {{ form.amount(class="form-control", placeholder="Enter budget amount") }}
+                        {% for error in form.amount.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="month" class="form-label">{{ form.month.label }}</label>
+                            {{ form.month(class="form-control") }}
+                            {% for error in form.month.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="year" class="form-label">{{ form.year.label }}</label>
+                            {{ form.year(class="form-control") }}
+                            {% for error in form.year.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-warning text-dark") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Budget Status -->
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-warning-subtle">
+                <h5 class="mb-0">{{ current_month }} {{ current_year }} Budget Status</h5>
+            </div>
+            <div class="card-body">
+                {% if budgets %}
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Budget</th>
+                                    <th>Spent</th>
+                                    <th>Remaining</th>
+                                    <th>Progress</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for budget in budgets %}
+                                <tr>
+                                    <td>
+                                        <span class="badge rounded-pill" style="background-color: {{ budget.color }}">
+                                            {{ budget.category }}
+                                        </span>
+                                    </td>
+                                    <td>Rs. {{ "%.2f"|format(budget.amount) }}</td>
+                                    <td>Rs. {{ "%.2f"|format(budget.spent) }}</td>
+                                    <td>Rs. {{ "%.2f"|format(budget.remaining) }}</td>
+                                    <td>
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar {% if budget.percentage >= 100 %}bg-danger{% elif budget.percentage >= 75 %}bg-warning{% else %}bg-success{% endif %}" 
+                                                role="progressbar" style="width: {{ budget.percentage }}%;" 
+                                                aria-valuenow="{{ budget.percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">{{ budget.percentage }}%</small>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ budget.id }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        
+                                        <!-- Delete Modal -->
+                                        <div class="modal fade" id="deleteModal{{ budget.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ budget.id }}" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteModalLabel{{ budget.id }}">Confirm Delete</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Are you sure you want to delete this budget?
+                                                        <p class="mt-2">
+                                                            <strong>Category:</strong> {{ budget.category }}<br>
+                                                            <strong>Budget Amount:</strong> Rs. {{ "%.2f"|format(budget.amount) }}
+                                                        </p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <form action="{{ url_for('delete_budget', budget_id=budget.id) }}" method="POST" class="d-inline">
+                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> To update a budget, simply create a new one for the same category and month.
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-balance-scale fa-3x mb-3 text-muted"></i>
+                        <p>You haven't set any budgets for this month yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-info-subtle">
+                <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Budgeting Tips</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Set realistic spending limits for each category</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Allocate budget amounts based on your income</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Consider using the 50/30/20 rule: 50% for needs, 30% for wants, 20% for savings</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Review and adjust your budgets regularly</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Set aside a small emergency fund</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Track your spending to identify areas where you can cut back</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

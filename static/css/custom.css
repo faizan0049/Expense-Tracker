@@ -1,0 +1,253 @@
+/**
+ * Custom CSS for Personal Expense Tracker application
+ */
+
+/* General Styles */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+.container {
+    max-width: 1200px;
+}
+
+/* Card Animations */
+.stats-card, .animated-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stats-card:hover, .card-hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Custom Badges */
+.badge {
+    padding: 0.5em 0.8em;
+}
+
+/* Avatar for Profile */
+.avatar-circle {
+    width: 100px;
+    height: 100px;
+    background-color: var(--bs-primary);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.initials {
+    font-size: 42px;
+    color: white;
+    font-weight: bold;
+}
+
+/* Icon Backgrounds */
+.icon-bg {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Progress Bars */
+.progress {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+/* Table Styling */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table th {
+    font-weight: 600;
+    border-top: none;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Form Controls */
+.form-control:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+/* Error Pages */
+.error-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Custom Card Headers */
+.card-header {
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    color: #fff; /* White text for better contrast */
+    background-color: #343a40 !important; /* Darker background for headers */
+}
+
+/* Specific styling for card headers based on card type */
+.bg-primary-subtle, .bg-success-subtle, .bg-info-subtle, .bg-warning-subtle, .bg-danger-subtle {
+    color: #fff !important;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.5);
+}
+
+.bg-primary-subtle {
+    background-color: #0d6efd !important;
+}
+
+.bg-success-subtle {
+    background-color: #198754 !important;
+}
+
+.bg-info-subtle {
+    background-color: #0dcaf0 !important;
+}
+
+.bg-warning-subtle {
+    background-color: #ffc107 !important;
+    color: #212529 !important; /* Dark text for yellow background */
+    text-shadow: none;
+}
+
+.bg-danger-subtle {
+    background-color: #dc3545 !important;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .display-5 {
+        font-size: 2rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .table {
+        font-size: 0.875rem;
+    }
+    
+    .btn-group-sm > .btn {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.7rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Dashboard Specific Styles */
+.metric-card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+.metric-icon {
+    font-size: 2rem;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+/* List Group Styling */
+.list-group-item {
+    background-color: transparent;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Button Focus States */
+.btn:focus {
+    box-shadow: none;
+}
+
+/* Dropdown Menu Styling */
+.dropdown-menu {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    padding: 0.5rem 0;
+}
+
+.dropdown-item {
+    padding: 0.5rem 1.5rem;
+}
+
+.dropdown-divider {
+    margin: 0.5rem 0;
+}
+
+/* Custom Colors for Budget Status */
+.budget-under {
+    color: var(--bs-success);
+}
+
+.budget-warning {
+    color: var(--bs-warning);
+}
+
+.budget-over {
+    color: var(--bs-danger);
+}
+
+/* Custom Alert Styling */
+.alert {
+    border-radius: 0.5rem;
+    border: none;
+}
+
+/* Custom Modal Styling */
+.modal-content {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: none;
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}

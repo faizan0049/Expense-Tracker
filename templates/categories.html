@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block title %}Categories - Personal Expense Tracker{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-tags me-2"></i>Categories</h1>
+</div>
+
+<div class="row">
+    <!-- Add Category Form -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{% if editing %}Edit{% else %}Add{% endif %} Category</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{% if editing %}{{ url_for('edit_category', category_id=category_id) }}{% else %}{{ url_for('categories') }}{% endif %}">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">{{ form.name.label }}</label>
+                        {{ form.name(class="form-control", placeholder="Enter category name") }}
+                        {% for error in form.name.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="type" class="form-label">{{ form.type.label }}</label>
+                        {{ form.type(class="form-control") }}
+                        {% for error in form.type.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="color" class="form-label">{{ form.color.label }}</label>
+                        <div class="input-group">
+                            {{ form.color(class="form-control", type="color") }}
+                            <span class="input-group-text" id="colorPreview"></span>
+                        </div>
+                        {% for error in form.color.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="icon" class="form-label">{{ form.icon.label }}</label>
+                        <div class="input-group">
+                            {{ form.icon(class="form-control", placeholder="e.g., fa-home") }}
+                            <span class="input-group-text"><i id="iconPreview" class="fas"></i></span>
+                        </div>
+                        <small class="form-text text-muted">Enter a Font Awesome icon name (e.g., fa-home, fa-car, fa-money-bill)</small>
+                        {% for error in form.icon.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                        {% if editing %}
+                            <a href="{{ url_for('categories') }}" class="btn btn-secondary">Cancel</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Icon Selection Guide -->
+        <div class="card mt-3 shadow">
+            <div class="card-header bg-secondary-subtle">
+                <h5 class="mb-0">Popular Icons</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-3 mb-3">
+                        <i class="fas fa-home fa-2x mb-1"></i>
+                        <p class="small">fa-home</p>
+                    </div>
+                    <div class="col-3 mb-3">
+                        <i class="fas fa-car fa-2x mb-1"></i>
+                        <p class="small">fa-car</p>
+                    </div>
+                    <div class="col-3 mb-3">
+                        <i class="fas fa-utensils fa-2x mb-1"></i>
+                        <p class="small">fa-utensils</p>
+                    </div>
+                    <div class="col-3 mb-3">
+                        <i class="fas fa-shopping-cart fa-2x mb-1"></i>
+                        <p class="small">fa-shopping-cart</p>
+                    </div>
+                    <div class="col-3 mb-3">
+                        <i class="fas fa-tshirt fa-2x mb-1"></i>
+                        <p class="small">fa-tshirt</p>
+                    </div>
+                    <div class="col-3 mb-3">
+                        <i class="fas fa-money-bill fa-2x mb-1"></i>
+                        <p class="small">fa-money-bill</p>
+                    </div>
+                    <div class="col-3 mb-3">
+                        <i class="fas fa-plane fa-2x mb-1"></i>
+                        <p class="small">fa-plane</p>
+                    </div>
+                    <div class="col-3 mb-3">
+                        <i class="fas fa-pills fa-2x mb-1"></i>
+                        <p class="small">fa-pills</p>
+                    </div>
+                </div>
+                <div class="text-center mt-2">
+                    <a href="https://fontawesome.com/icons?d=gallery&s=solid&m=free" target="_blank" class="btn btn-sm btn-outline-secondary">
+                        View More Icons
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Categories Lists -->
+    <div class="col-md-8">
+        <!-- Expense Categories -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-danger-subtle">
+                <h5 class="mb-0">Expense Categories</h5>
+            </div>
+            <div class="card-body">
+                {% if expense_categories %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Icon</th>
+                                    <th>Color</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category in expense_categories %}
+                                <tr>
+                                    <td>{{ category.name }}</td>
+                                    <td><i class="fas {{ category.icon }}"></i></td>
+                                    <td>
+                                        <span class="badge rounded-pill" style="background-color: {{ category.color }}">
+                                            {{ category.color }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('edit_category', category_id=category.id) }}" class="btn btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModalExp{{ category.id }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Delete Modal -->
+                                        <div class="modal fade" id="deleteModalExp{{ category.id }}" tabindex="-1" aria-labelledby="deleteModalLabelExp{{ category.id }}" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteModalLabelExp{{ category.id }}">Confirm Delete</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Are you sure you want to delete the category "{{ category.name }}"?
+                                                        {% if category.expenses %}
+                                                        <div class="alert alert-warning mt-3">
+                                                            <i class="fas fa-exclamation-triangle me-2"></i>This category is used in {{ category.expenses|length }} expense transactions. Deleting it will not be possible.
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <form action="{{ url_for('delete_category', category_id=category.id) }}" method="POST" class="d-inline">
+                                                            <button type="submit" class="btn btn-danger" {% if category.expenses %}disabled{% endif %}>Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-tags fa-3x mb-3 text-muted"></i>
+                        <p>No expense categories created yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Income Categories -->
+        <div class="card shadow">
+            <div class="card-header bg-success-subtle">
+                <h5 class="mb-0">Income Categories</h5>
+            </div>
+            <div class="card-body">
+                {% if income_categories %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Icon</th>
+                                    <th>Color</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category in income_categories %}
+                                <tr>
+                                    <td>{{ category.name }}</td>
+                                    <td><i class="fas {{ category.icon }}"></i></td>
+                                    <td>
+                                        <span class="badge rounded-pill" style="background-color: {{ category.color }}">
+                                            {{ category.color }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('edit_category', category_id=category.id) }}" class="btn btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModalInc{{ category.id }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Delete Modal -->
+                                        <div class="modal fade" id="deleteModalInc{{ category.id }}" tabindex="-1" aria-labelledby="deleteModalLabelInc{{ category.id }}" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteModalLabelInc{{ category.id }}">Confirm Delete</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Are you sure you want to delete the category "{{ category.name }}"?
+                                                        {% if category.incomes %}
+                                                        <div class="alert alert-warning mt-3">
+                                                            <i class="fas fa-exclamation-triangle me-2"></i>This category is used in {{ category.incomes|length }} income transactions. Deleting it will not be possible.
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <form action="{{ url_for('delete_category', category_id=category.id) }}" method="POST" class="d-inline">
+                                                            <button type="submit" class="btn btn-danger" {% if category.incomes %}disabled{% endif %}>Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-tags fa-3x mb-3 text-muted"></i>
+                        <p>No income categories created yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Color picker preview
+        const colorInput = document.getElementById('color');
+        const colorPreview = document.getElementById('colorPreview');
+        
+        // Icon preview
+        const iconInput = document.getElementById('icon');
+        const iconPreview = document.getElementById('iconPreview');
+        
+        // Update color preview
+        function updateColorPreview() {
+            colorPreview.style.backgroundColor = colorInput.value;
+        }
+        
+        // Update icon preview
+        function updateIconPreview() {
+            iconPreview.className = 'fas ' + iconInput.value;
+        }
+        
+        // Initial preview
+        if (colorInput && colorPreview) {
+            updateColorPreview();
+            colorInput.addEventListener('input', updateColorPreview);
+        }
+        
+        if (iconInput && iconPreview) {
+            updateIconPreview();
+            iconInput.addEventListener('input', updateIconPreview);
+        }
+    });
+</script>
+{% endblock %}

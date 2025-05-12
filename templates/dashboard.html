@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Personal Expense Tracker{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-card {
+        transition: transform 0.3s;
+    }
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+    .icon-bg {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="mb-4"><i class="fas fa-chart-line me-2"></i>Dashboard</h1>
+
+<div class="row g-4 mb-4">
+    <!-- Monthly Overview Cards -->
+    <div class="col-md-4">
+        <div class="card shadow stats-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="text-muted">Income</h6>
+                        <h3 class="mb-0">Rs. {{ "%.2f"|format(total_income) }}</h3>
+                    </div>
+                    <div class="icon-bg bg-success-subtle">
+                        <i class="fas fa-money-bill-wave fa-lg text-success"></i>
+                    </div>
+                </div>
+                <p class="text-muted small">{{ current_month }} {{ current_year }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow stats-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="text-muted">Expenses</h6>
+                        <h3 class="mb-0">Rs. {{ "%.2f"|format(total_expenses) }}</h3>
+                    </div>
+                    <div class="icon-bg bg-danger-subtle">
+                        <i class="fas fa-coins fa-lg text-danger"></i>
+                    </div>
+                </div>
+                <p class="text-muted small">{{ current_month }} {{ current_year }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow stats-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="text-muted">Savings</h6>
+                        <h3 class="mb-0" {% if net_savings < 0 %}class="text-danger"{% endif %}>
+                            Rs. {{ "%.2f"|format(net_savings) }}
+                        </h3>
+                    </div>
+                    <div class="icon-bg {% if net_savings >= 0 %}bg-info-subtle{% else %}bg-warning-subtle{% endif %}">
+                        <i class="fas fa-piggy-bank fa-lg {% if net_savings >= 0 %}text-info{% else %}text-warning{% endif %}"></i>
+                    </div>
+                </div>
+                <p class="text-muted small">{{ current_month }} {{ current_year }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Expense Breakdown Chart -->
+    <div class="col-md-6">
+        <div class="card shadow h-100">
+            <div class="card-header bg-primary-subtle">
+                <h5 class="card-title mb-0 text-white"><i class="fas fa-chart-pie me-2"></i>Expense Breakdown</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="expenseChart" height="230"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Income Breakdown Chart -->
+    <div class="col-md-6">
+        <div class="card shadow h-100">
+            <div class="card-header bg-success-subtle">
+                <h5 class="card-title mb-0 text-white"><i class="fas fa-chart-pie me-2"></i>Income Breakdown</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="incomeChart" height="230"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Monthly Trends Chart -->
+    <div class="col-md-12">
+        <div class="card shadow">
+            <div class="card-header bg-info-subtle">
+                <h5 class="card-title mb-0"><i class="fas fa-chart-line me-2"></i>Monthly Trends</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="trendsChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Budget Status -->
+    <div class="col-md-12">
+        <div class="card shadow">
+            <div class="card-header bg-warning-subtle">
+                <h5 class="card-title mb-0"><i class="fas fa-balance-scale me-2"></i>Budget Status</h5>
+            </div>
+            <div class="card-body">
+                {% if budget_data %}
+                    {% for budget in budget_data %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span>{{ budget.category }}</span>
+                            <span>Rs. {{ "%.2f"|format(budget.spent) }} of Rs. {{ "%.2f"|format(budget.budget) }}</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar" role="progressbar" style="width: {{ budget.percentage }}%; background-color: {{ budget.color }};" 
+                                aria-valuenow="{{ budget.percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('budgets') }}" class="btn btn-outline-primary">Manage Budgets</a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-balance-scale fa-3x mb-3 text-muted"></i>
+                        <p>You haven't set any budgets for this month yet.</p>
+                        <a href="{{ url_for('budgets') }}" class="btn btn-primary">Create Budget</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Expenses -->
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-danger-subtle">
+                <h5 class="card-title mb-0"><i class="fas fa-coins me-2"></i>Recent Expenses</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_expenses %}
+                    <div class="list-group">
+                        {% for expense in recent_expenses %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ expense.description or expense.category.name }}</h6>
+                                <span class="text-danger">Rs. {{ "%.2f"|format(expense.amount) }}</span>
+                            </div>
+                            <p class="mb-1 small">{{ expense.category.name }}</p>
+                            <small class="text-muted">{{ expense.date.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('expenses') }}" class="btn btn-outline-danger">View All Expenses</a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-coins fa-3x mb-3 text-muted"></i>
+                        <p>No recent expenses to display.</p>
+                        <a href="{{ url_for('expenses') }}" class="btn btn-danger">Add Expense</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Income -->
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-success-subtle">
+                <h5 class="card-title mb-0"><i class="fas fa-money-bill-wave me-2"></i>Recent Income</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_incomes %}
+                    <div class="list-group">
+                        {% for income in recent_incomes %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ income.description or income.category.name }}</h6>
+                                <span class="text-success">Rs. {{ "%.2f"|format(income.amount) }}</span>
+                            </div>
+                            <p class="mb-1 small">{{ income.category.name }}</p>
+                            <small class="text-muted">{{ income.date.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('income') }}" class="btn btn-outline-success">View All Income</a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-money-bill-wave fa-3x mb-3 text-muted"></i>
+                        <p>No recent income to display.</p>
+                        <a href="{{ url_for('income') }}" class="btn btn-success">Add Income</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Expense Categories Chart
+        const expenseCtx = document.getElementById('expenseChart').getContext('2d');
+        const expenseData = {
+            labels: [{% for category in expense_categories %}'{{ category.name }}',{% endfor %}],
+            datasets: [{
+                data: [
+                    {% for category in expense_categories %}
+                    {{ category.expenses|map(attribute='amount')|sum }},
+                    {% endfor %}
+                ],
+                backgroundColor: [
+                    {% for category in expense_categories %}
+                    '{{ category.color }}',
+                    {% endfor %}
+                ]
+            }]
+        };
+        new Chart(expenseCtx, {
+            type: 'doughnut',
+            data: expenseData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+
+        // Income Categories Chart
+        const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+        const incomeData = {
+            labels: [{% for category in income_categories %}'{{ category.name }}',{% endfor %}],
+            datasets: [{
+                data: [
+                    {% for category in income_categories %}
+                    {{ category.incomes|map(attribute='amount')|sum }},
+                    {% endfor %}
+                ],
+                backgroundColor: [
+                    {% for category in income_categories %}
+                    '{{ category.color }}',
+                    {% endfor %}
+                ]
+            }]
+        };
+        new Chart(incomeCtx, {
+            type: 'doughnut',
+            data: incomeData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+
+        // Monthly Trends Chart
+        const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+        const trendsData = {
+            labels: [{% for month in months_data %}'{{ month.month }}',{% endfor %}],
+            datasets: [{
+                label: 'Income',
+                data: [{% for month in months_data %}{{ month.income }},{% endfor %}],
+                borderColor: '#198754',
+                backgroundColor: 'rgba(25, 135, 84, 0.2)',
+                fill: true
+            }, {
+                label: 'Expenses',
+                data: [{% for month in months_data %}{{ month.expenses }},{% endfor %}],
+                borderColor: '#dc3545',
+                backgroundColor: 'rgba(220, 53, 69, 0.2)',
+                fill: true
+            }]
+        };
+        new Chart(trendsCtx, {
+            type: 'line',
+            data: trendsData,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

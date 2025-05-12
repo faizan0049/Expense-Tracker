@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Expenses - Personal Expense Tracker{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-coins me-2"></i>Expenses</h1>
+</div>
+
+<div class="row">
+    <!-- Add Expense Form -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{% if editing %}Edit{% else %}Add{% endif %} Expense</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{% if editing %}{{ url_for('edit_expense', expense_id=expense_id) }}{% else %}{{ url_for('expenses') }}{% endif %}">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">{{ form.amount.label }}</label>
+                        {{ form.amount(class="form-control", placeholder="Enter amount") }}
+                        {% for error in form.amount.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">{{ form.description.label }}</label>
+                        {{ form.description(class="form-control", placeholder="Enter description (optional)") }}
+                        {% for error in form.description.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">{{ form.date.label }}</label>
+                        {{ form.date(class="form-control", type="date") }}
+                        {% for error in form.date.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="category_id" class="form-label">{{ form.category_id.label }}</label>
+                        {{ form.category_id(class="form-control") }}
+                        {% for error in form.category_id.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                        {% if editing %}
+                            <a href="{{ url_for('expenses') }}" class="btn btn-secondary">Cancel</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Expenses List -->
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary-subtle">
+                <h5 class="mb-0">Expense History</h5>
+            </div>
+            <div class="card-body">
+                {% if expenses %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for expense in expenses %}
+                                <tr>
+                                    <td>{{ expense.date.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <span class="badge rounded-pill" style="background-color: {{ expense.category.color }}">
+                                            <i class="fas {{ expense.category.icon }} me-1"></i>
+                                            {{ expense.category.name }}
+                                        </span>
+                                    </td>
+                                    <td>{{ expense.description or 'N/A' }}</td>
+                                    <td>Rs. {{ "%.2f"|format(expense.amount) }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('edit_expense', expense_id=expense.id) }}" class="btn btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ expense.id }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Delete Modal -->
+                                        <div class="modal fade" id="deleteModal{{ expense.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ expense.id }}" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteModalLabel{{ expense.id }}">Confirm Delete</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Are you sure you want to delete this expense?
+                                                        <p class="mt-2">
+                                                            <strong>Date:</strong> {{ expense.date.strftime('%Y-%m-%d') }}<br>
+                                                            <strong>Category:</strong> {{ expense.category.name }}<br>
+                                                            <strong>Description:</strong> {{ expense.description or 'N/A' }}<br>
+                                                            <strong>Amount:</strong> Rs. {{ "%.2f"|format(expense.amount) }}
+                                                        </p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <form action="{{ url_for('delete_expense', expense_id=expense.id) }}" method="POST" class="d-inline">
+                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-coins fa-3x mb-3 text-muted"></i>
+                        <p>You haven't added any expenses yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

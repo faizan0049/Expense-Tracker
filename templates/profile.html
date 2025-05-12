@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Personal Expense Tracker{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-id-card me-2"></i>Your Profile</h1>
+</div>
+
+<div class="row">
+    <!-- User Info -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary-subtle">
+                <h5 class="mb-0">Account Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="avatar-circle mx-auto mb-3">
+                        <span class="initials">{{ current_user.username[0] | upper }}</span>
+                    </div>
+                    <h4>{{ current_user.username }}</h4>
+                    <p class="text-muted">{{ current_user.email }}</p>
+                </div>
+                
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Member Since
+                        <span>{{ join_date }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Total Transactions
+                        <span>{{ expenses_count + incomes_count }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Expenses Recorded
+                        <span>{{ expenses_count }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Income Entries
+                        <span>{{ incomes_count }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Financial Summary -->
+    <div class="col-md-8">
+        <div class="row g-4">
+            <!-- Lifetime Income -->
+            <div class="col-md-6">
+                <div class="card shadow h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-money-bill-wave fa-3x mb-3 text-success"></i>
+                        <h5 class="card-title">Lifetime Income</h5>
+                        <h2 class="display-5">Rs. {{ "%.2f"|format(total_income) }}</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lifetime Expenses -->
+            <div class="col-md-6">
+                <div class="card shadow h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-coins fa-3x mb-3 text-danger"></i>
+                        <h5 class="card-title">Lifetime Expenses</h5>
+                        <h2 class="display-5">Rs. {{ "%.2f"|format(total_expenses) }}</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lifetime Savings -->
+            <div class="col-md-6">
+                <div class="card shadow h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-piggy-bank fa-3x mb-3 {% if total_income - total_expenses >= 0 %}text-info{% else %}text-warning{% endif %}"></i>
+                        <h5 class="card-title">Lifetime Savings</h5>
+                        <h2 class="display-5 {% if total_income - total_expenses < 0 %}text-danger{% endif %}">Rs. {{ "%.2f"|format(total_income - total_expenses) }}</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Monthly Average -->
+            <div class="col-md-6">
+                <div class="card shadow h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">Avg. Monthly Spending</h5>
+                        <h2 class="display-5">Rs. {{ "%.2f"|format(avg_monthly_spending) }}</h2>
+                        <p class="text-muted small">(Last 3 months)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Financial Health Tips -->
+        <div class="card shadow mt-4">
+            <div class="card-header bg-info-subtle">
+                <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Financial Health Tips</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Create an emergency fund covering 3-6 months of expenses</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Aim to save at least 20% of your income</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Regularly review and update your budget</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Track and categorize all your expenses</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Pay off high-interest debt first</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Set specific, measurable financial goals</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

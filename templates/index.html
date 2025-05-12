@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mt-5 align-items-center">
+    <div class="col-md-6">
+        <div class="p-4">
+            <h1 class="display-4 fw-bold mb-4">Take Control of Your Finances</h1>
+            <p class="lead mb-4">Track expenses, manage budgets, and gain insights into your spending habits with our easy-to-use expense tracking application.</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-4 me-md-2">Get Started</a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg px-4">Login</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 text-center">
+        <div class="p-4">
+            <img src="https://pixabay.com/get/g4f32848eed1e443c77d305a729139d533cb4bb47a1931ae51cf6c788db7f3f934403321fc63f5c01817a782ecdcea442793195827110eefa808e61cd632386ef_1280.jpg" alt="Financial tracking" class="img-fluid rounded shadow-lg" style="max-height: 350px;">
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12 text-center">
+        <h2 class="display-6 fw-bold mb-4">Why Choose Our Expense Tracker?</h2>
+    </div>
+</div>
+
+<div class="row mb-5 g-4">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-pie fa-4x mb-3 text-primary"></i>
+                <h3 class="card-title">Visualize Your Finances</h3>
+                <p class="card-text">Interactive charts and graphs provide a clear picture of your spending habits.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-balance-scale fa-4x mb-3 text-success"></i>
+                <h3 class="card-title">Budget Planning</h3>
+                <p class="card-text">Set budgets for different categories and track your progress throughout the month.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-file-export fa-4x mb-3 text-info"></i>
+                <h3 class="card-title">Export Reports</h3>
+                <p class="card-text">Generate and export detailed financial reports for your records.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row my-5 align-items-center">
+    <div class="col-md-6 text-center">
+        <img src="https://pixabay.com/get/gd2de6ecf084405920e65b9f10bd162281f83b2b20927f5f35d53a051d270c198c8e5264ad64780690c6250fe8d77f6da850e23be3b7326bd5c4fa9d15bf54230_1280.jpg" alt="Expense management" class="img-fluid rounded shadow-lg" style="max-height: 350px;">
+    </div>
+    <div class="col-md-6">
+        <div class="p-4">
+            <h2 class="display-5 fw-bold mb-4">Features Designed for You</h2>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Easy expense and income tracking</li>
+                <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Customizable categories</li>
+                <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Monthly budget planning</li>
+                <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Detailed financial reports</li>
+                <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Responsive design for mobile access</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
