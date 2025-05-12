@@ -87,7 +87,11 @@ ExpenseTracker/
 
 ## 📷 Screenshots
 
-(Add screenshots of key UI pages here like login, dashboard, add expense, etc.)
+![image](https://github.com/user-attachments/assets/bfaaf3cd-c0ac-4544-8377-7ef30e79a2f1)
+![image](https://github.com/user-attachments/assets/fb7fb5b3-9164-4465-a14a-804e2396c1cd)
+![image](https://github.com/user-attachments/assets/3e00bef8-44f2-4fe8-a7dc-d37b32741d9b)
+![image](https://github.com/user-attachments/assets/eca5915b-8746-47a9-bab7-fb7daebc3a55)
+
 
 ## 📬 Contact
 
