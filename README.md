@@ -74,14 +74,11 @@ ExpenseTracker/
 ├── routes.py
 ├── forms.py
 ├── utils.py
-├── instance/
-│   └── expense_tracker.db
 ├── templates/
 │   └── *.html
 ├── static/
 │   └── css/
 │       └── custom.css
-├── ER.png
 ├── requirements.txt
 ```
 
